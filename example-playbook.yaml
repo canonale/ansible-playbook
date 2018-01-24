@@ -1,17 +1,16 @@
 ---
 - hosts: webserver
-  remote_user: admin
+  remote_user: root
   vars:
     user: "demo"
-    packages: ["php7", "apache2", "mysql"]
-    wp_repo: "https://github.com/WordPress/wordpress-develop"
+    packages: ["php5", "apache2", "mysql-server", "git"]
+    wp_repo: "https://github.com/WordPress/wordpress-develop.git"
     wp_version: "4.9"
-    services: ["mysqld", "apache2"]
+    services: ["mysql", "apache2"]
   tasks:
     - name: Create user
       user:
         name: "{{ user }}"
-        group: admin
         shell: /bin/bash
 
     - name: Install packages
@@ -19,11 +18,11 @@
         name: "{{ item }}"
         state: present
       with_items: "{{ packages }}"
-
+    - command: rm -Rf /var/www/html/
     - name: Install wordpress
       git:
         repo: "{{ wp_repo }}"
-        dest: "/var/www/html"
+        dest: "/var/www/html/"
         version: "{{ wp_version }}"
         force: yes
 
